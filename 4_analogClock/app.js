@@ -1,9 +1,14 @@
-// addEventListener(DOMContentLoaded, getPresentTime);
+const $hour = document.querySelector('.hand.hour');
+const $minute = document.querySelector('.hand.minute');
+const $second = document.querySelector('.hand.second');
 
-const getPresentTime = setInterval(() => {
+setInterval(() => {
   const now = new Date();
   const hour = now.getHours();
   const minute = now.getMinutes();
   const second = now.getSeconds();
-  console.log(hour, minute, second);
+
+  $second.style.setProperty('--deg', second * 6);
+  $minute.style.setProperty('--deg', minute * 6 + second * 0.1);
+  $hour.style.setProperty('--deg', hour * 30 + minute * 0.5);
 }, 1000);
