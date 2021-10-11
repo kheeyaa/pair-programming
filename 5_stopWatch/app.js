@@ -1,11 +1,13 @@
 const $display = document.querySelector('.display');
 const $stopwatch = document.querySelector('.stopwatch');
+const $laps = document.querySelector('.laps');
 
 const $leftControl = $stopwatch.children[1];
 const $rightControl = $stopwatch.children[2];
 
 let isRunning = false;
 let interval = 0;
+let laps = [];
 
 const formatTime = () => {
   const millisecond = interval % 100;
@@ -17,8 +19,25 @@ const formatTime = () => {
   }:${millisecond > 9 ? millisecond : '0' + millisecond}`;
 };
 
-const render = () => {
+const renderTime = () => {
   $display.innerHTML = formatTime();
+};
+
+const renderLapsTime = () => {
+  const $fragment = document.createDocumentFragment();
+  const $lapsId = document.createElement('div');
+  const $lapsTime = document.createElement('div');
+  if (laps.length > 0) {
+    $lapsId.innerHTML = laps.length;
+    $lapsTime.innerHTML = laps[laps.length - 1];
+    $fragment.appendChild($lapsId);
+    $fragment.appendChild($lapsTime);
+    $laps.appendChild($fragment);
+  } else {
+    $laps.innerHTML = `
+        <div class="lap-title">Laps</div>
+        <div class="lap-title">Time</div>`;
+  }
 };
 
 const startTimer = () => {
@@ -31,12 +50,14 @@ const startTimer = () => {
     if (!isRunning) {
       clearInterval(runTimer);
     }
-    render();
+    renderTime();
   }, 10);
 };
 
 const stopTimer = () => {
-  $rightControl.setAttribute('disabled', true);
+  if (interval === 0) {
+    $rightControl.setAttribute('disabled', true);
+  }
   $leftControl.innerHTML = 'Start';
   $rightControl.innerHTML = 'Reset';
 };
@@ -44,4 +65,16 @@ const stopTimer = () => {
 $leftControl.onclick = () => {
   isRunning ? stopTimer() : startTimer();
   isRunning = !isRunning;
+};
+
+$rightControl.onclick = () => {
+  if (isRunning) {
+    laps = [...laps, formatTime()];
+    renderLapsTime();
+  } else {
+    interval = 0;
+    laps = [];
+    renderTime();
+    renderLapsTime();
+  }
 };
