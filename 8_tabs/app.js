@@ -24,6 +24,7 @@ const fetchTabsData = () => {
 };
 
 // ----------------------------------------
+
 const $tabs = document.querySelector('.tabs');
 const $spinner = document.querySelector('.spinner');
 
@@ -66,6 +67,8 @@ const activateTab = id => {
   [...$tabs.children].forEach((tab, i) =>
     i === +id + 1 ? tab.classList.add('active') : tab.classList.remove('active')
   );
+  const $glider = document.querySelector('.glider');
+  $glider.style.transform = `translateX(calc(var(--tab-width) * ${+id}px))`;
 };
 
 $tabs.onclick = e => {
