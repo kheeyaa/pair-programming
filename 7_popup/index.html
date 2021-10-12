@@ -29,12 +29,64 @@
         text-align: center;
       }
       /* 팝업을 위한 CSS */
+      .hidden {
+        display: none;
+      }
+      .modal-wrap {
+        width: 100vw;
+        height: 100vh;
+        background-color: rgb(0, 0, 0, 0.7);
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .modal {
+        margin: 20vh auto 0;
+        max-width: 520px;
+        min-height: 200px;
+        box-sizing: border-box;
+        background-color: white;
+        border-radius: 5px;
+        padding: 20px;
+        position: relative;
+      }
+      .modal h2 {
+        font-size: 2em;
+      }
+      .modal-cancel {
+        display: inline-block;
+      }
+      .modal-close {
+        border: 0;
+        background-color: transparent;
+        font-size: 40px;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+      }
     </style>
   </head>
   <body>
     <h1 class="title">Popup</h1>
 
-    <!-- 팝업을 위한 HTML -->
+    <button class="toggle-popup">toggle popup</button>
+    <div class="modal-wrap hidden">
+      <div class="modal">
+        <h2 class="title">Hello!</h2>
+        <p class="modal-content">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Numquam
+          dolore atque voluptatibus sed eius earum excepturi consequuntur
+          laboriosam, deserunt dicta quisquam ipsam quam voluptate Architecto
+          Alias quibusdam Velit ex! Consectetur.
+        </p>
+        <form class="modal-form">
+          <input type="text" class="modal-input" />
+          <button type="submit" class="modal-submit">OK</button>
+          <button type="button" class="modal-cancel">Cancel</button>
+        </form>
+        <button class="modal-close"><i class="bx bx-x"></i></button>
+      </div>
+    </div>
 
     <p class="popup-message"></p>
     <script src="./app.js"></script>
