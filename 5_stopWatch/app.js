@@ -27,6 +27,11 @@ const renderLapsTime = () => {
   const $fragment = document.createDocumentFragment();
   const $lapsId = document.createElement('div');
   const $lapsTime = document.createElement('div');
+  if (laps.length === 1) {
+    $laps.innerHTML = `
+      <div class="lap-title">Laps</div>
+      <div class="lap-title">Time</div>`;
+  }
   if (laps.length > 0) {
     $lapsId.innerHTML = laps.length;
     $lapsTime.innerHTML = laps[laps.length - 1];
@@ -34,9 +39,7 @@ const renderLapsTime = () => {
     $fragment.appendChild($lapsTime);
     $laps.appendChild($fragment);
   } else {
-    $laps.innerHTML = `
-        <div class="lap-title">Laps</div>
-        <div class="lap-title">Time</div>`;
+    $laps.innerHTML = '';
   }
 };
 
@@ -76,5 +79,6 @@ $rightControl.onclick = () => {
     laps = [];
     renderTime();
     renderLapsTime();
+    $rightControl.setAttribute('disabled', true);
   }
 };
