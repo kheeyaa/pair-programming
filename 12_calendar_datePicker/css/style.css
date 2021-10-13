@@ -2,6 +2,7 @@
 
 :root {
   --calendar-size: 400px;
+  --font-size: calc(var(--calendar-size) / 20);
 }
 
 *,
@@ -27,6 +28,7 @@ body {
   overflow: hidden;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   margin: 0 auto;
+  font-size: var(--font-size);
 }
 
 .calendar-nav {
@@ -60,17 +62,35 @@ body {
 
 .calendar-days {
   display: grid;
-  grid-template-areas: 'sunday monday tuesday wednesday thursday friday saturday';
+  grid-template-areas: '. . . . . . .';
   text-align: center;
-  height: 30px;
 }
 .calendar-dates {
+  background-color: lightcoral;
   display: grid;
-  grid-template-areas: 'sunday monday tuesday wednesday thursday friday saturday';
+  grid-template-areas: '. . . . . . . ';
   text-align: center;
 }
-
+.calendar-days > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(var(--calendar-size) / 7);
+  height: calc(var(--calendar-size) / 7);
+}
 .calendar-dates > div {
-  background-color: lightcoral;
-  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(var(--calendar-size) / 7);
+  height: calc(var(--calendar-size) / 7);
+}
+
+.beforeMonth,
+.afterMonth {
+  color: #fff;
+}
+
+.sunday {
+  color: yellow;
 }
