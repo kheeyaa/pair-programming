@@ -1,6 +1,27 @@
+const $body = document.querySelector('body');
+
+let toastRecord = [];
+
+const changePositionOfToast = () => {
+  toastRecord.forEach(($toast, idx) => {
+    $toast.style.bottom = idx * 100 + 'px';
+  });
+};
+// 높이를 동적으로 가져오는 것으로 리팩토링하기!
+
+const deleteToast = $toast => {
+  setTimeout(() => {
+    $body.removeChild($toast);
+    toastRecord.pop();
+  }, 3000);
+};
+
 const toaster = {
   add(toasterHTML) {
     document.querySelector('body').appendChild(toasterHTML);
+    toastRecord = [toasterHTML, ...toastRecord];
+    changePositionOfToast();
+    deleteToast(toasterHTML);
   }
 };
 
