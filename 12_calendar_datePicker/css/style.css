@@ -1,0 +1,76 @@
+@import url(./reset.css);
+
+:root {
+  --calendar-size: 400px;
+}
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Open Sans';
+  font-weight: 300;
+}
+.title {
+  color: #db5b33;
+  font-weight: 300;
+  text-align: center;
+  font-size: 2em;
+  padding: 1em;
+}
+
+.calendar {
+  width: var(--calendar-size);
+  border-radius: calc(var(--calendar-size) / 25);
+  overflow: hidden;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  margin: 0 auto;
+}
+
+.calendar-nav {
+  background-color: #3bba66;
+  display: flex;
+  justify-content: space-between;
+  padding: calc(var(--calendar-size) / 25);
+  color: white;
+}
+
+.calendar-btn {
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+}
+
+.calendar-year-month-name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.month {
+  margin-bottom: 0.5em;
+}
+
+.calendar-grid {
+  background-color: white;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-areas: 'sunday monday tuesday wednesday thursday friday saturday';
+  text-align: center;
+  height: 30px;
+}
+.calendar-dates {
+  display: grid;
+  grid-template-areas: 'sunday monday tuesday wednesday thursday friday saturday';
+  text-align: center;
+}
+
+.calendar-dates > div {
+  background-color: lightcoral;
+  height: 30px;
+}
