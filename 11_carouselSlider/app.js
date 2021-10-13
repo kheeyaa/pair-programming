@@ -1,4 +1,4 @@
-const SLIDING_DURATION = 300;
+const SLIDING_DURATION = 200;
 
 const $prevBtn = document.querySelector('.carousel-control.prev');
 const $nextBtn = document.querySelector('.carousel-control.next');
