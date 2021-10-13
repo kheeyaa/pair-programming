@@ -1,32 +1,30 @@
 // DOM ------------------------------
+const $calendar = document.querySelector('.calendar');
 const $month = document.querySelector('.month');
 const $year = document.querySelector('.year');
 const $dates = document.querySelector('.calendar-dates');
 const $prevBtn = document.querySelector('.calendar-btn.prev');
 const $nextBtn = document.querySelector('.calendar-btn.next');
+const $datePicker = document.querySelector('.date-picker');
 
 const $calendarDates = document.querySelector('.calendar-dates');
 
 // value ------------------------------
-const currentDateObj = new Date();
-const currentYear = currentDateObj.getFullYear();
-const currentMonth = currentDateObj.getMonth();
-const currentDay = currentDateObj.getDay();
-const currentDate = currentDateObj.getDate();
-
 let selectedDateObj = new Date();
 let selectedYear = +selectedDateObj.getFullYear();
 let selectedMonth = +selectedDateObj.getMonth();
 // const selectedDay = selectedDateObj.getDay();
-// const selectedDate = selectedDateObj.getDate();
+let selectedDate = selectedDateObj.getDate();
 
 // function ------------------------------
 const getMonthName = dateObj =>
   new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dateObj);
 
-const setSelectedDateInfo = (year, month) => {
+const setSelectedDateInfo = (year, month, date = selectedDate) => {
+  selectedDateObj = new Date(year, month, date);
   selectedYear = year;
   selectedMonth = month;
+  selectedDate = date;
 };
 
 const getPrevMonth = () => {
@@ -56,15 +54,17 @@ const renderNav = dateObj => {
   $year.innerHTML = dateObj.getFullYear();
 };
 
+// const isEqualDate = (date1, date2) => +date1 === +date2;
+
 const createSelectedDatesHTML = (firstDay, lastDate) => {
   const firstSunday = 8 - firstDay;
   const dates = Array.from({ length: +lastDate }, (_, idx) => idx + 1);
   return dates
     .map(
       date => `
-  <div class="date ${
-    date % 7 === firstSunday % 7 ? 'sunday' : ''
-  }">${date}</div>
+  <div class="date ${date % 7 === firstSunday % 7 ? 'sunday' : ''} ${
+        date === selectedDate ? 'picked' : ''
+      }" data-year="${selectedYear}" data-month="${selectedMonth}" data-date="${date}">${date}</div>
   `
     )
     .join('');
@@ -79,7 +79,11 @@ const createPrevDatesHTML = (firstDay, lastDate) => {
   return dates
     .map(
       date => `
-    <div class="date beforeMonth">${date}</div>
+    <div class="date beforeMonth" data-year="${
+      selectedMonth === 0 ? selectedYear - 1 : selectedYear
+    }" data-month="${
+        selectedMonth === 0 ? 11 : selectedMonth - 1
+      }" data-date="${date}">${date}</div>
     `
     )
     .join('');
@@ -91,7 +95,11 @@ const createNextDatesHTML = lastDay => {
   return dates
     .map(
       date => `
-      <div class="date afterMonth">${date}</div>
+      <div class="date afterMonth" data-year="${
+        selectedMonth === 11 ? selectedYear + 1 : selectedYear
+      }" data-month="${
+        selectedMonth === 11 ? 0 : selectedMonth + 1
+      }" data-date="${date}">${date}</div>
       `
     )
     .join('');
@@ -113,12 +121,18 @@ const renderDates = () => {
 };
 
 const renderCal = () => {
-  renderNav(currentDateObj);
-  renderDates(currentDateObj);
+  renderNav(selectedDateObj);
+  renderDates(selectedDateObj);
 };
 
 // event ------------------------------
+
 window.addEventListener('DOMContentLoaded', renderCal);
+
+$datePicker.onfocus = () => {
+  $calendar.classList.remove('hidden');
+};
+
 $prevBtn.onclick = () => {
   getPrevMonth();
   renderNav(selectedDateObj);
@@ -129,4 +143,26 @@ $nextBtn.onclick = () => {
   getNextMonth();
   renderNav(selectedDateObj);
   renderDates(selectedDateObj);
+};
+
+window.onclick = e => {
+  if (
+    !e.target.closest('.calendar') &&
+    !e.target.classList.contains('date-picker')
+  )
+    $calendar.classList.add('hidden');
+};
+
+$dates.onclick = e => {
+  if (!e.target.classList.contains('date')) return;
+  const selected = e.target.dataset;
+  const { year, month, date } = selected;
+
+  setSelectedDateInfo(+year, +month, +date);
+  renderCal();
+
+  $datePicker.value = `${year}-${month > 8 ? +month + 1 : '0' + (+month + 1)}-${
+    date > 9 ? date : '0' + date
+  }`;
+  $calendar.classList.add('hidden');
 };
