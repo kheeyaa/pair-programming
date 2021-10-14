@@ -46,9 +46,9 @@ const isEqualPw = () => {
 const isValidate = (inputType, inputVal, regexp) => {
   const validation = regexp.test(inputVal);
 
-  inputType === 'id'
+  inputType === 'userid'
     ? (idValidateState = validation)
-    : inputType === 'pw'
+    : inputType === 'password'
     ? (pwValidateState = validation)
     : (nameValidateState = validation);
 
@@ -56,47 +56,36 @@ const isValidate = (inputType, inputVal, regexp) => {
 };
 
 const noticeValidation = (inputType, target) => {
-  if (
-    inputType !== 'id' &&
-    inputType !== 'pw' &&
-    inputType !== 'name' &&
-    inputType !== 'confirmPw'
-  )
+  const INPUT_TYPES = ['userid', 'username', 'password', 'confirm-password'];
+
+  if (!INPUT_TYPES.includes(inputType))
     throw new TypeError('input type Error!');
 
   const [regexp, message] =
-    inputType === 'id'
+    inputType === 'userid'
       ? [ID_REGEXP, ID_ERROR_MESSAGE]
-      : inputType === 'pw'
+      : inputType === 'password'
       ? [PW_REGEXP, PW_ERROR_MESSAGE]
-      : inputType === 'name'
+      : inputType === 'username'
       ? [NAME_REGEXP, NAME_ERROR_MESSAGE]
-      : [PW_REGEXP, PW_CONFIRM_ERROR_MESSAGE];
+      : [null, PW_CONFIRM_ERROR_MESSAGE];
 
-  const validation =
-    inputType === 'id' || inputType === 'pw' || inputType === 'name'
-      ? isValidate(inputType, target.value, regexp)
-      : isEqualPw();
+  const validation = [...INPUT_TYPES].slice(0, 3).includes(inputType)
+    ? isValidate(inputType, target.value, regexp)
+    : isEqualPw();
 
-  if (validation) {
-    target.parentNode.lastElementChild.innerHTML = '';
-    [...target.parentNode.children].forEach(node =>
-      node.matches('.icon-success')
-        ? node.classList.remove('hidden')
-        : node.matches('.icon-error')
-        ? node.classList.add('hidden')
-        : node
-    );
-  } else {
-    target.parentNode.lastElementChild.innerHTML = message;
-    [...target.parentNode.children].forEach(node =>
-      node.matches('.icon-error')
-        ? node.classList.remove('hidden')
-        : node.matches('.icon-success')
-        ? node.classList.add('hidden')
-        : node
-    );
-  }
+  const [iconForHidden, iconNotForHidden, innerMessage] = validation
+    ? ['success', 'error', '']
+    : ['error', 'success', message];
+
+  target.parentNode.lastElementChild.innerHTML = innerMessage;
+  [...target.parentNode.children].forEach(node =>
+    node.matches('.icon-' + iconForHidden)
+      ? node.classList.remove('hidden')
+      : node.matches('.icon-' + iconNotForHidden)
+      ? node.classList.add('hidden')
+      : node
+  );
 };
 
 const activeSigninBtn = () => {
@@ -118,48 +107,20 @@ const activeSignupBtn = () => {
 
 // Event Bindings
 
-$signinUserid.oninput = e => {
-  noticeValidation('id', e.target);
-  activeSigninBtn();
-};
+[$signinForm, $signupForm].forEach($form => {
+  $form.oninput = e => {
+    noticeValidation(e.target.name, e.target);
+    activeSigninBtn();
+    activeSignupBtn();
+  };
+});
 
-$signinPassword.oninput = e => {
-  noticeValidation('pw', e.target);
-  activeSigninBtn();
-};
-
-// ---
-$signupUserid.oninput = e => {
-  noticeValidation('id', e.target);
-  activeSignupBtn();
-};
-
-$signupPassword.oninput = e => {
-  noticeValidation('pw', e.target);
-  activeSignupBtn();
-};
-
-$signupName.oninput = e => {
-  noticeValidation('name', e.target);
-  activeSignupBtn();
-};
-
-$signupConfirmPassword.oninput = e => {
-  noticeValidation('confirmPw', e.target);
-  activeSignupBtn();
-};
-// ---
-
-$signinForm.onsubmit = e => {
-  e.preventDefault();
-  toaster(e);
-};
-
-$signupForm.onsubmit = e => {
-  e.preventDefault();
-  toaster(e);
-};
-// ---
+[$signinForm, $signupForm].forEach($form => {
+  $form.onsubmit = e => {
+    e.preventDefault();
+    toaster(e);
+  };
+});
 
 $links.forEach($el => {
   $el.onclick = () => {
