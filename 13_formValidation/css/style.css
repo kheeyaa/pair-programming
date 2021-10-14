@@ -81,11 +81,11 @@ body {
 }
 
 /*
-  input 요소가 포거스 상태 또는 valid 상태이면 레이블을 input 요소 위에 위치시키고 크기를 줄인다.
-  input 요소에 require가 적용되어 있어서 값이 입력되어 있으면 valid 상태가 된다.
-  input 요소가 포거스 상태가 아닐 때 텍스트가 입력되지 있지 않으면 invalid 상태가 되어 레이블이 제자리로 복귀하고
-  텍스트가 입력되어 있으면 valid 상태가 되어 레이블이 제자리로 복귀하지 않는다.
-  */
+input 요소가 포거스 상태 또는 valid 상태이면 레이블을 input 요소 위에 위치시키고 크기를 줄인다.
+input 요소에 require가 적용되어 있어서 값이 입력되어 있으면 valid 상태가 된다.
+input 요소가 포거스 상태가 아닐 때 텍스트가 입력되지 있지 않으면 invalid 상태가 되어 레이블이 제자리로 복귀하고
+텍스트가 입력되어 있으면 valid 상태가 되어 레이블이 제자리로 복귀하지 않는다.
+*/
 .input-container input:focus + label,
 .input-container input:valid + label {
   top: -65%;
