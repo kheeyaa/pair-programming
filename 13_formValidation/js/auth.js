@@ -1,8 +1,12 @@
 // DOM Nodes
 
+import toaster from './toaster.js';
+
 const $signinUserid = document.getElementById('signin-userid');
 const $signinPassword = document.getElementById('signin-password');
 const $signinBtn = document.querySelector('.signin.button');
+const $signinForm = document.querySelector('.signin.form');
+const $signupForm = document.querySelector('.signup.form');
 
 // varaibles
 // constants
@@ -72,4 +76,9 @@ $signinUserid.oninput = e => {
 $signinPassword.oninput = e => {
   noticeValidation('pw', e.target);
   activeSigninBtn();
+};
+
+$signinForm.onsubmit = e => {
+  e.preventDefault();
+  toaster(e);
 };
