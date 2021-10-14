@@ -1,82 +1,70 @@
-// DOM Nodes
-
 import toaster from './toaster.js';
 
-const $signinUserid = document.getElementById('signin-userid');
-const $signinPassword = document.getElementById('signin-password');
-const $signinBtn = document.querySelector('.signin.button');
+// DOM Nodes
 const $signinForm = document.querySelector('.signin.form');
+const $signinBtn = document.querySelector('.signin.button');
 const $signupForm = document.querySelector('.signup.form');
-const $links = document.querySelectorAll('.link > a');
-const $signupUserid = document.getElementById('signup-userid');
-const $signupPassword = document.getElementById('signup-password');
-const $signupName = document.getElementById('signup-name');
-const $signupConfirmPassword = document.getElementById(
-  'signup-confirm-password'
-);
-
 const $signupBtn = document.querySelector('.signup.button');
+const $links = document.querySelectorAll('.link > a');
 
-// varaibles
-// constants
-const ID_REGEXP =
-  /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
-const PW_REGEXP = /^[0-9a-zA-Z]{6,12}$/;
-const NAME_REGEXP = /^[A-Za-z가-힣]+$/;
-// const PW_CONFIRM_REGEXP = //
-
-const ID_ERROR_MESSAGE = '이메일 형식에 맞게 입력해 주세요.';
-const PW_ERROR_MESSAGE = '영문 또는 숫자를 6~12자 입력해 주세요.';
-const NAME_ERROR_MESSAGE = '이름을 입력해 주세요.';
-const PW_CONFIRM_ERROR_MESSAGE = '패스워드가 일치하지 않습니다.';
-
-// states
-let idValidateState = false;
-let pwValidateState = false;
-let nameValidateState = false;
-let confirmValidateState = false;
-
-// functions
-
-const isEqualPw = () => {
-  confirmValidateState = $signupPassword.value === $signupConfirmPassword.value;
-  return confirmValidateState;
+// constants and states
+const INPUT_TYPE_INFO = {
+  userid: {
+    message: '이메일 형식에 맞게 입력해 주세요.',
+    regExp:
+      /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i,
+    validateState: false
+  },
+  username: {
+    message: '이름을 입력해 주세요.',
+    regExp: /^[A-Za-z가-힣]+$/,
+    validateState: false
+  },
+  password: {
+    message: '영문 또는 숫자를 6~12자 입력해 주세요.',
+    regExp: /^[0-9a-zA-Z]{6,12}$/,
+    validateState: false
+  },
+  'confirm-password': {
+    message: '패스워드가 일치하지 않습니다.',
+    validateState: false
+  }
 };
 
-const isValidate = (inputType, inputVal, regexp) => {
-  const validation = regexp.test(inputVal);
+// functions
+const isEqualPw = () => {
+  const $signupPassword = document.getElementById('signup-password');
+  const $signupConfirmPassword = document.getElementById(
+    'signup-confirm-password'
+  );
+  INPUT_TYPE_INFO['confirm-password'].validateState =
+    $signupPassword.value === $signupConfirmPassword.value;
+  return INPUT_TYPE_INFO['confirm-password'].validateState;
+};
 
-  inputType === 'userid'
-    ? (idValidateState = validation)
-    : inputType === 'password'
-    ? (pwValidateState = validation)
-    : (nameValidateState = validation);
+const isValidate = (inputType, inputVal) => {
+  // const validation = regexp.test(inputVal);
+  const validation = INPUT_TYPE_INFO[inputType].regExp.test(inputVal);
+
+  INPUT_TYPE_INFO[inputType].validateState = validation;
 
   return validation;
 };
 
 const noticeValidation = (inputType, target) => {
-  const INPUT_TYPES = ['userid', 'username', 'password', 'confirm-password'];
-
-  if (!INPUT_TYPES.includes(inputType))
+  if (!(inputType in INPUT_TYPE_INFO)) {
     throw new TypeError('input type Error!');
+  }
 
-  const [regexp, message] =
-    inputType === 'userid'
-      ? [ID_REGEXP, ID_ERROR_MESSAGE]
-      : inputType === 'password'
-      ? [PW_REGEXP, PW_ERROR_MESSAGE]
-      : inputType === 'username'
-      ? [NAME_REGEXP, NAME_ERROR_MESSAGE]
-      : [null, PW_CONFIRM_ERROR_MESSAGE];
-
-  const validation = [...INPUT_TYPES].slice(0, 3).includes(inputType)
-    ? isValidate(inputType, target.value, regexp)
-    : isEqualPw();
+  const validation =
+    inputType === 'confirm-password'
+      ? isEqualPw()
+      : isValidate(inputType, target.value);
 
   const [iconForHidden, iconNotForHidden, innerMessage] = validation
     ? ['success', 'error', '']
-    : ['error', 'success', message];
+    : ['error', 'success', INPUT_TYPE_INFO[inputType].message];
+  // 일단 킵//////////////////////////////////
 
   target.parentNode.lastElementChild.innerHTML = innerMessage;
   [...target.parentNode.children].forEach(node =>
@@ -89,21 +77,31 @@ const noticeValidation = (inputType, target) => {
 };
 
 const activeSigninBtn = () => {
-  if (idValidateState && pwValidateState)
+  if (
+    INPUT_TYPE_INFO.userid.validateState &&
+    INPUT_TYPE_INFO.password.validateState
+  )
     $signinBtn.removeAttribute('disabled');
   else $signinBtn.setAttribute('disabled', '');
 };
 
 const activeSignupBtn = () => {
   if (
-    idValidateState &&
-    pwValidateState &&
-    nameValidateState &&
-    confirmValidateState
+    INPUT_TYPE_INFO.userid.validateState &&
+    INPUT_TYPE_INFO.password.validateState &&
+    INPUT_TYPE_INFO.username.validateState &&
+    INPUT_TYPE_INFO['confirm-password'].validateState
   )
     $signupBtn.removeAttribute('disabled');
   else $signupBtn.setAttribute('disabled', '');
 };
+
+// if (
+//   INPUT_TYPE_INFO.userid.validateState &&
+//   INPUT_TYPE_INFO.password.validateState &&
+//   (AAA ? true : INPUT_TYPE_INFO.username.validateState) &&
+//   (AAA ? true : INPUT_TYPE_INFO['confirm-password'].validateState)
+// )
 
 // Event Bindings
 
@@ -129,10 +127,10 @@ $links.forEach($el => {
     });
 
     [
-      idValidateState,
-      pwValidateState,
-      nameValidateState,
-      confirmValidateState
+      INPUT_TYPE_INFO.userid.validateState,
+      INPUT_TYPE_INFO.password.validateState,
+      INPUT_TYPE_INFO.username.validateState,
+      INPUT_TYPE_INFO['confirm-password'].validateState
     ] = [false, false, false, false];
   };
 });
