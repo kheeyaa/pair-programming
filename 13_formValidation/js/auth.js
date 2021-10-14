@@ -38,17 +38,19 @@ let confirmValidateState = false;
 
 // functions
 
-const isEqualPw = () => $signupPassword.value === $signupConfirmPassword.value;
+const isEqualPw = () => {
+  confirmValidateState = $signupPassword.value === $signupConfirmPassword.value;
+  return confirmValidateState;
+};
 
 const isValidate = (inputType, inputVal, regexp) => {
   const validation = regexp.test(inputVal);
+
   inputType === 'id'
     ? (idValidateState = validation)
     : inputType === 'pw'
     ? (pwValidateState = validation)
-    : inputType === 'name'
-    ? (nameValidateState = validation)
-    : (confirmValidateState = isEqualPw());
+    : (nameValidateState = validation);
 
   return validation;
 };
@@ -71,7 +73,12 @@ const noticeValidation = (inputType, target) => {
       ? [NAME_REGEXP, NAME_ERROR_MESSAGE]
       : [PW_REGEXP, PW_CONFIRM_ERROR_MESSAGE];
 
-  if (isValidate(inputType, target.value, regexp)) {
+  const validation =
+    inputType === 'id' || inputType === 'pw' || inputType === 'name'
+      ? isValidate(inputType, target.value, regexp)
+      : isEqualPw();
+
+  if (validation) {
     target.parentNode.lastElementChild.innerHTML = '';
     [...target.parentNode.children].forEach(node =>
       node.matches('.icon-success')
@@ -152,6 +159,7 @@ $signupForm.onsubmit = e => {
   e.preventDefault();
   toaster(e);
 };
+// ---
 
 $links.forEach($el => {
   $el.onclick = () => {
