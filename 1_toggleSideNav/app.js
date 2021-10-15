@@ -1,30 +1,30 @@
 // state
 let isActive = false;
 
-// DOM 요소
+// DOM
 const $toggle = document.querySelector('.toggle');
 const $nav = document.querySelector('nav');
 
-// event 핸들러 등록
-
+// functions
 const fetchState = () => {
   isActive = localStorage.getItem('isActive')
     ? JSON.parse(localStorage.getItem('isActive'))
     : false;
 };
 
-const toggleNavigator = () => {
+const toggleNavigatorState = () => {
+  fetchState();
   isActive = !isActive;
-  isActive = localStorage.setItem('isActive', isActive);
+  localStorage.setItem('isActive', isActive);
   $nav.classList.toggle('active', isActive);
 };
 
+// event bindings
 window.addEventListener('DOMContentLoaded', () => {
   fetchState();
   $nav.classList.toggle('active', isActive);
 });
 
 $toggle.onclick = () => {
-  fetchState();
-  toggleNavigator();
+  toggleNavigatorState();
 };
