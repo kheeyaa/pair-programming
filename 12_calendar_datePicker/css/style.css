@@ -10,10 +10,12 @@
 *::before {
   box-sizing: border-box;
 }
+
 body {
   font-family: 'Open Sans';
   font-weight: 300;
 }
+
 .title {
   color: #db5b33;
   font-weight: 300;
@@ -32,26 +34,26 @@ body {
 }
 
 .calendar {
-  width: calc(var(--calendar-size) * 1.04);
-  border-radius: calc(var(--calendar-size) / 25);
+  position: relative;
   overflow: hidden;
+  width: calc(var(--calendar-size) * 1.04);
+  margin-top: 10px;
+  border-radius: calc(var(--calendar-size) / 25);
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   font-size: var(--font-size);
-  position: relative;
-  margin-top: 10px;
 }
 
 .calendar-nav {
-  background-color: #3bba66;
   display: flex;
   justify-content: space-between;
   padding: calc(var(--calendar-size) / 25);
+  background-color: #3bba66;
   color: white;
 }
 
 .calendar-btn {
-  background-color: transparent;
   border: 0;
+  background-color: transparent;
   color: inherit;
 }
 
@@ -70,26 +72,23 @@ body {
   background-color: white;
 }
 
-.calendar-days {
-  color: #aaa;
-  display: grid;
-  grid-template-areas: '. . . . . . .';
-  padding: 0 2%;
-  text-align: center;
-}
+.calendar-days,
 .calendar-dates {
   display: grid;
-  grid-template-areas: '. . . . . . . ';
+  grid-template-areas: '. . . . . . .';
   text-align: center;
+}
+
+.calendar-days {
+  padding: 0 2%;
+  color: #aaa;
+}
+
+.calendar-dates {
   padding: 2%;
 }
-.calendar-days > div {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: calc(var(--calendar-size) / 7);
-  height: calc(var(--calendar-size) / 7);
-}
+
+.calendar-days > div,
 .calendar-dates > div {
   display: flex;
   justify-content: center;
@@ -106,12 +105,14 @@ body {
 .sunday {
   color: red;
 }
+
 .date {
   border-radius: 50%;
   transition: all 0.4s ease;
 }
+
 .picked,
 .date:hover {
-  color: white;
   background-color: #3bba66;
+  color: white;
 }

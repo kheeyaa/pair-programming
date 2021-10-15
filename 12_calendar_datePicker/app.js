@@ -1,4 +1,4 @@
-// DOM ------------------------------
+// DOM Nodes
 const $calendar = document.querySelector('.calendar');
 const $month = document.querySelector('.month');
 const $year = document.querySelector('.year');
@@ -8,14 +8,13 @@ const $nextBtn = document.querySelector('.calendar-btn.next');
 const $datePicker = document.querySelector('.date-picker');
 const $calendarDates = document.querySelector('.calendar-dates');
 
-// value ------------------------------
+// states
 let selectedDateObj = new Date();
 let selectedYear = +selectedDateObj.getFullYear();
 let selectedMonth = +selectedDateObj.getMonth();
-// const selectedDay = selectedDateObj.getDay();
 let selectedDate = selectedDateObj.getDate();
 
-// function ------------------------------
+// functions
 const getMonthName = dateObj =>
   new Intl.DateTimeFormat('en-US', { month: 'long' }).format(dateObj);
 
@@ -48,12 +47,23 @@ const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 const getLastDayOfMonth = (year, month) =>
   new Date(year, month + 1, 0).getDay();
 
-const renderNav = dateObj => {
-  $month.innerHTML = getMonthName(dateObj);
-  $year.innerHTML = dateObj.getFullYear();
+const createPrevDatesHTML = (firstDay, lastDateOfPrevMonth) => {
+  const dates = Array.from(
+    { length: +firstDay },
+    (_, idx) => lastDateOfPrevMonth - firstDay + idx + 1
+  );
+  return dates
+    .map(
+      date => `
+    <div class="date beforeMonth" data-year="${
+      selectedMonth === 0 ? selectedYear - 1 : selectedYear
+    }" data-month="${
+        selectedMonth === 0 ? 11 : selectedMonth - 1
+      }" data-date="${date}">${date}</div>
+    `
+    )
+    .join('');
 };
-
-// const isEqualDate = (date1, date2) => +date1 === +date2;
 
 const createSelectedDatesHTML = (firstDay, lastDate) => {
   const firstSunday = 8 - firstDay;
@@ -65,25 +75,6 @@ const createSelectedDatesHTML = (firstDay, lastDate) => {
         date === selectedDate ? 'picked' : ''
       }" data-year="${selectedYear}" data-month="${selectedMonth}" data-date="${date}">${date}</div>
   `
-    )
-    .join('');
-};
-
-// lastDate는 전달의 마지막 일수이다.
-const createPrevDatesHTML = (firstDay, lastDate) => {
-  const dates = Array.from(
-    { length: +firstDay },
-    (_, idx) => lastDate - +firstDay + idx + 1
-  );
-  return dates
-    .map(
-      date => `
-    <div class="date beforeMonth" data-year="${
-      selectedMonth === 0 ? selectedYear - 1 : selectedYear
-    }" data-month="${
-        selectedMonth === 0 ? 11 : selectedMonth - 1
-      }" data-date="${date}">${date}</div>
-    `
     )
     .join('');
 };
@@ -104,6 +95,11 @@ const createNextDatesHTML = lastDay => {
     .join('');
 };
 
+const renderNav = () => {
+  $month.innerHTML = getMonthName(selectedDateObj);
+  $year.innerHTML = selectedYear;
+};
+
 const renderDates = () => {
   const lastDate = getLastDateOfMonth(selectedYear, selectedMonth);
   const lastDateOfPrevMonth = getLastDateOfMonth(
@@ -120,12 +116,11 @@ const renderDates = () => {
 };
 
 const renderCal = () => {
-  renderNav(selectedDateObj);
-  renderDates(selectedDateObj);
+  renderNav();
+  renderDates();
 };
 
-// event ------------------------------
-
+// event bindings
 window.addEventListener('DOMContentLoaded', renderCal);
 
 $datePicker.onfocus = () => {
