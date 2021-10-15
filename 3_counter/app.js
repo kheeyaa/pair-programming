@@ -1,11 +1,9 @@
-// DOM Nods
-
+// DOM Nodes
 const $increase = document.querySelector('.increase');
 const $decrease = document.querySelector('.decrease');
 const $counter = document.querySelector('.counter');
 
-// State Functions
-
+// functions
 const counter = (function () {
   let number = 0;
   return {
