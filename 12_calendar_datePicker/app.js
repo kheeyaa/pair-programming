@@ -6,7 +6,6 @@ const $dates = document.querySelector('.calendar-dates');
 const $prevBtn = document.querySelector('.calendar-btn.prev');
 const $nextBtn = document.querySelector('.calendar-btn.next');
 const $datePicker = document.querySelector('.date-picker');
-
 const $calendarDates = document.querySelector('.calendar-dates');
 
 // value ------------------------------

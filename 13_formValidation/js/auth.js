@@ -43,7 +43,6 @@ const isEqualPw = () => {
 };
 
 const isValidate = (inputType, inputVal) => {
-  // const validation = regexp.test(inputVal);
   const validation = INPUT_TYPE_INFO[inputType].regExp.test(inputVal);
 
   INPUT_TYPE_INFO[inputType].validateState = validation;
@@ -61,55 +60,54 @@ const noticeValidation = (inputType, target) => {
       ? isEqualPw()
       : isValidate(inputType, target.value);
 
-  const [iconForHidden, iconNotForHidden, innerMessage] = validation
-    ? ['success', 'error', '']
-    : ['error', 'success', INPUT_TYPE_INFO[inputType].message];
-  // 일단 킵//////////////////////////////////
+  const [iconNotForHidden, iconForHidden, innerMessage] = validation
+    ? ['.icon-success', '.icon-error', '']
+    : ['.icon-error', '.icon-success', INPUT_TYPE_INFO[inputType].message];
 
   target.parentNode.lastElementChild.innerHTML = innerMessage;
   [...target.parentNode.children].forEach(node =>
-    node.matches('.icon-' + iconForHidden)
+    node.matches(iconNotForHidden)
       ? node.classList.remove('hidden')
-      : node.matches('.icon-' + iconNotForHidden)
+      : node.matches(iconForHidden)
       ? node.classList.add('hidden')
       : node
   );
 };
 
-const activeSigninBtn = () => {
-  if (
-    INPUT_TYPE_INFO.userid.validateState &&
-    INPUT_TYPE_INFO.password.validateState
-  )
-    $signinBtn.removeAttribute('disabled');
-  else $signinBtn.setAttribute('disabled', '');
-};
-
-const activeSignupBtn = () => {
+const activeBtn = targetForm => {
+  const $targetBtn = targetForm === 'signin' ? $signinBtn : $signupBtn;
   if (
     INPUT_TYPE_INFO.userid.validateState &&
     INPUT_TYPE_INFO.password.validateState &&
-    INPUT_TYPE_INFO.username.validateState &&
-    INPUT_TYPE_INFO['confirm-password'].validateState
+    (targetForm === 'signin'
+      ? true
+      : INPUT_TYPE_INFO.username.validateState &&
+        INPUT_TYPE_INFO['confirm-password'].validateState)
   )
-    $signupBtn.removeAttribute('disabled');
-  else $signupBtn.setAttribute('disabled', '');
+    $targetBtn.removeAttribute('disabled');
+  else $targetBtn.setAttribute('disabled', '');
 };
 
-// if (
-//   INPUT_TYPE_INFO.userid.validateState &&
-//   INPUT_TYPE_INFO.password.validateState &&
-//   (AAA ? true : INPUT_TYPE_INFO.username.validateState) &&
-//   (AAA ? true : INPUT_TYPE_INFO['confirm-password'].validateState)
-// )
+const printUserInput = $form => {
+  [...$form.children]
+    .filter(element => element.matches('.input-container'))
+    .map(element => [...element.children])
+    .flat()
+    .filter(element => element.matches('input'))
+    .forEach(element => {
+      console.log(element.value);
+    });
+};
 
 // Event Bindings
 
 [$signinForm, $signupForm].forEach($form => {
   $form.oninput = e => {
+    const targetForm = e.target.closest('form').classList.contains('signin')
+      ? 'signin'
+      : 'signup';
     noticeValidation(e.target.name, e.target);
-    activeSigninBtn();
-    activeSignupBtn();
+    activeBtn(targetForm);
   };
 });
 
@@ -117,6 +115,7 @@ const activeSignupBtn = () => {
   $form.onsubmit = e => {
     e.preventDefault();
     toaster(e);
+    printUserInput(e.target);
   };
 });
 
