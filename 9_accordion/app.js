@@ -17,14 +17,14 @@ const getHeight = target => {
   return totalHeight + 'px';
 };
 
-const showMenu = target => {
+const expandMenu = target => {
   [...$accordion.children].forEach($menuContainer => {
     $menuContainer.lastElementChild.style.height =
       $menuContainer.classList.contains('active') ? getHeight(target) : 0;
   });
 };
 
-const initialMenu = () => {
+const initializeMenuHeight = () => {
   const $active = document.querySelector('.active');
   $active.lastElementChild.style.height = 'auto';
 
@@ -38,7 +38,7 @@ $accordion.onclick = e => {
   if (!e.target.classList.contains('menu')) return;
 
   activeAccordionMenu(e.target.parentNode);
-  showMenu(e.target.nextElementSibling);
+  expandMenu(e.target.nextElementSibling);
 };
 
-window.addEventListener('DOMContentLoaded', initialMenu);
+window.addEventListener('DOMContentLoaded', initializeMenuHeight);
