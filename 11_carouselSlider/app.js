@@ -1,51 +1,42 @@
-const SLIDING_DURATION = 200;
+// constants
+const SLIDING_DURATION = 600;
 
-const $prevBtn = document.querySelector('.carousel-control.prev');
-const $nextBtn = document.querySelector('.carousel-control.next');
+// states
+let isAbleSliding = true;
+
+// DOM Nodes
 const $carouselSlides = document.createElement('div');
 const $carousel = document.querySelector('.carousel');
 
-const throttle = (callback, delay) => {
-  let timerId;
-  return event => {
-    if (timerId) return;
-    timerId = setTimeout(
-      () => {
-        callback(event);
-        timerId = null;
-      },
-      delay,
-      event
-    );
-  };
+$carousel.onclick = e => {
+  if (!isAbleSliding) return;
+  if (!e.target.classList.contains('carousel-control')) return;
+
+  const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
+
+  const [nextSlide, shiftedSlide] = e.target.classList.contains('prev')
+    ? [+currentSlide + 1, 1]
+    : [+currentSlide - 1, $carouselSlides.children.length - 2];
+
+  $carouselSlides.style.setProperty('--currentSlide', nextSlide);
+  if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1) {
+    // settimeout 하지 않고 transitionend 끝나면 듀레이션 돌려주면 됨
+    $carouselSlides.style.setProperty('--duration', 0);
+
+    // setTimeout(() => {
+    //   $carouselSlides.style.setProperty('--duration', 0);
+    //   $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
+    // }, SLIDING_DURATION);
+  }
 };
 
-$nextBtn.onclick = throttle(() => {
+$carouselSlides.addEventListener('transitionstart', () => {
+  isAbleSliding = false;
+});
+$carouselSlides.addEventListener('transitionend', () => {
   $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
-  const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
-  $carouselSlides.style.setProperty('--currentSlide', +currentSlide + 1);
-  if (+currentSlide + 1 === $carouselSlides.children.length - 1) {
-    setTimeout(() => {
-      $carouselSlides.style.setProperty('--duration', 0);
-      $carouselSlides.style.setProperty('--currentSlide', 1);
-    }, SLIDING_DURATION);
-  }
-}, SLIDING_DURATION);
-
-$prevBtn.onclick = throttle(() => {
-  $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
-  const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
-  $carouselSlides.style.setProperty('--currentSlide', +currentSlide - 1);
-  if (+currentSlide - 1 === 0) {
-    setTimeout(() => {
-      $carouselSlides.style.setProperty('--duration', 0);
-      $carouselSlides.style.setProperty(
-        '--currentSlide',
-        $carouselSlides.children.length - 2
-      );
-    }, SLIDING_DURATION);
-  }
-}, SLIDING_DURATION);
+  isAbleSliding = true;
+});
 
 const carousel = ($container, images) => {
   $carouselSlides.classList.add('carousel-slides');
