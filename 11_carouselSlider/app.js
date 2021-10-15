@@ -9,8 +9,8 @@ const $carouselSlides = document.createElement('div');
 const $carousel = document.querySelector('.carousel');
 
 $carousel.onclick = e => {
-  if (!isAbleSliding) return;
-  if (!e.target.classList.contains('carousel-control')) return;
+  if (!(isAbleSliding && e.target.classList.contains('carousel-control')))
+    return;
   $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
 
   const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
@@ -21,9 +21,6 @@ $carousel.onclick = e => {
 
   $carouselSlides.style.setProperty('--currentSlide', nextSlide);
   if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1) {
-    // settimeout 하지 않고 transitionend 끝나면 듀레이션 돌려주면 됨
-    // $carouselSlides.style.setProperty('--duration', 0);
-
     setTimeout(() => {
       $carouselSlides.style.setProperty('--duration', 0);
       $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
@@ -32,32 +29,24 @@ $carousel.onclick = e => {
   }
 };
 
-$carouselSlides.addEventListener('transitionstart', () => {
-  isAbleSliding = false;
-});
-$carouselSlides.addEventListener('transitionend', () => {
-  isAbleSliding = true;
+['transitionstart', 'transitionend'].forEach(transitionEvent => {
+  $carouselSlides.addEventListener(transitionEvent, () => {
+    isAbleSliding = transitionEvent === 'transitionend';
+  });
 });
 
 const carousel = ($container, images) => {
   $carouselSlides.classList.add('carousel-slides');
   $carouselSlides.innerHTML =
-    `
-    <img src="${images[images.length - 1]}" style = "min-width: 100%"/>
-  ` +
+    `<img src="${images[images.length - 1]}" style = "min-width: 100%"/>` +
     images
-      .map(
-        image => `
-    <img src="${image}" style = "min-width: 100%"/>
-    `
-      )
+      .map(image => `<img src="${image}" style = "min-width: 100%"/>`)
       .join('') +
-    `
-    <img src="${images[0]}" style = "min-width: 100%"/>
-  `;
+    `<img src="${images[0]}" style = "min-width: 100%"/>`;
   $container.appendChild($carouselSlides);
   $carousel.style.width = '100%';
   $carouselSlides.style.width = '100%';
+  $carousel.style.opacity = '1';
   $carouselSlides.style.setProperty('--currentSlide', 1);
 };
 
