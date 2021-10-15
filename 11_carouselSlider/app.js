@@ -8,33 +8,7 @@ let isAbleSliding = true;
 const $carouselSlides = document.createElement('div');
 const $carousel = document.querySelector('.carousel');
 
-$carousel.onclick = e => {
-  if (!(isAbleSliding && e.target.classList.contains('carousel-control')))
-    return;
-  $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
-
-  const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
-
-  const [nextSlide, shiftedSlide] = e.target.classList.contains('next')
-    ? [+currentSlide + 1, 1]
-    : [+currentSlide - 1, $carouselSlides.children.length - 2];
-
-  $carouselSlides.style.setProperty('--currentSlide', nextSlide);
-  if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1) {
-    setTimeout(() => {
-      $carouselSlides.style.setProperty('--duration', 0);
-      $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
-      isAbleSliding = true;
-    }, SLIDING_DURATION);
-  }
-};
-
-['transitionstart', 'transitionend'].forEach(transitionEvent => {
-  $carouselSlides.addEventListener(transitionEvent, () => {
-    isAbleSliding = transitionEvent === 'transitionend';
-  });
-});
-
+// functions
 const carousel = ($container, images) => {
   $carouselSlides.classList.add('carousel-slides');
   $carouselSlides.innerHTML =
@@ -56,3 +30,35 @@ carousel(document.querySelector('.carousel'), [
   'movies/movie-3.jpg',
   'movies/movie-4.jpg'
 ]);
+
+['transitionstart', 'transitionend'].forEach(transitionEvent => {
+  $carouselSlides.addEventListener(transitionEvent, () => {
+    isAbleSliding = transitionEvent === 'transitionend';
+  });
+});
+
+const jumpSlide = shiftedSlide => {
+  $carouselSlides.style.setProperty('--duration', 0);
+  $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
+  isAbleSliding = true;
+};
+
+// event bindings
+$carousel.onclick = e => {
+  if (!(isAbleSliding && e.target.classList.contains('carousel-control')))
+    return;
+  $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
+
+  const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
+
+  const [nextSlide, shiftedSlide] = e.target.classList.contains('next')
+    ? [+currentSlide + 1, 1]
+    : [+currentSlide - 1, $carouselSlides.children.length - 2];
+
+  $carouselSlides.style.setProperty('--currentSlide', nextSlide);
+  if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1) {
+    setTimeout(() => {
+      jumpSlide(shiftedSlide);
+    }, SLIDING_DURATION);
+  }
+};
