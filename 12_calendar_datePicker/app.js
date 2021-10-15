@@ -55,12 +55,12 @@ const createPrevDatesHTML = (firstDay, lastDateOfPrevMonth) => {
   return dates
     .map(
       date => `
-    <div class="date beforeMonth" data-year="${
-      selectedMonth === 0 ? selectedYear - 1 : selectedYear
-    }" data-month="${
+      <div class="date beforeMonth" data-year="${
+        selectedMonth === 0 ? selectedYear - 1 : selectedYear
+      }" data-month="${
         selectedMonth === 0 ? 11 : selectedMonth - 1
       }" data-date="${date}">${date}</div>
-    `
+      `
     )
     .join('');
 };
