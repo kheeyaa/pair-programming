@@ -11,22 +11,24 @@ const $carousel = document.querySelector('.carousel');
 $carousel.onclick = e => {
   if (!isAbleSliding) return;
   if (!e.target.classList.contains('carousel-control')) return;
+  $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
 
   const currentSlide = $carouselSlides.style.getPropertyValue('--currentSlide');
 
-  const [nextSlide, shiftedSlide] = e.target.classList.contains('prev')
+  const [nextSlide, shiftedSlide] = e.target.classList.contains('next')
     ? [+currentSlide + 1, 1]
     : [+currentSlide - 1, $carouselSlides.children.length - 2];
 
   $carouselSlides.style.setProperty('--currentSlide', nextSlide);
   if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1) {
     // settimeout 하지 않고 transitionend 끝나면 듀레이션 돌려주면 됨
-    $carouselSlides.style.setProperty('--duration', 0);
+    // $carouselSlides.style.setProperty('--duration', 0);
 
-    // setTimeout(() => {
-    //   $carouselSlides.style.setProperty('--duration', 0);
-    //   $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
-    // }, SLIDING_DURATION);
+    setTimeout(() => {
+      $carouselSlides.style.setProperty('--duration', 0);
+      $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
+      isAbleSliding = true;
+    }, SLIDING_DURATION);
   }
 };
 
@@ -34,7 +36,6 @@ $carouselSlides.addEventListener('transitionstart', () => {
   isAbleSliding = false;
 });
 $carouselSlides.addEventListener('transitionend', () => {
-  $carouselSlides.style.setProperty('--duration', SLIDING_DURATION);
   isAbleSliding = true;
 });
 
