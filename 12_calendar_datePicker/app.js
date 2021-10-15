@@ -20,22 +20,18 @@ const getMonthName = dateObj =>
 
 const setSelectedDateInfo = (year, month, date = selectedDate) => {
   selectedDateObj = new Date(year, month, date);
-  selectedYear = year;
-  selectedMonth = month;
-  selectedDate = date;
+  [selectedYear, selectedMonth, selectedDate] = [year, month, date];
 };
 
-const getPrevMonth = () => {
+const setPrevMonthYear = () => {
   const prevMonth = selectedMonth > 0 ? selectedMonth - 1 : 11;
   const prevYear = prevMonth === 11 ? selectedYear - 1 : selectedYear;
-  selectedDateObj = new Date(prevYear, prevMonth);
   setSelectedDateInfo(prevYear, prevMonth);
 };
 
-const getNextMonth = () => {
+const setNextMonthYear = () => {
   const nextMonth = selectedMonth < 11 ? selectedMonth + 1 : 0;
   const nextYear = nextMonth === 0 ? selectedYear + 1 : selectedYear;
-  selectedDateObj = new Date(nextYear, nextMonth);
   setSelectedDateInfo(nextYear, nextMonth);
 };
 
@@ -47,53 +43,59 @@ const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 const getLastDayOfMonth = (year, month) =>
   new Date(year, month + 1, 0).getDay();
 
-const createPrevDatesHTML = (firstDay, lastDateOfPrevMonth) => {
-  const dates = Array.from(
-    { length: +firstDay },
-    (_, idx) => lastDateOfPrevMonth - firstDay + idx + 1
-  );
-  return dates
-    .map(
-      date => `
-      <div class="date beforeMonth" data-year="${
-        selectedMonth === 0 ? selectedYear - 1 : selectedYear
-      }" data-month="${
-        selectedMonth === 0 ? 11 : selectedMonth - 1
-      }" data-date="${date}">${date}</div>
-      `
-    )
-    .join('');
-};
+const createDatesOfPrevMonth = (firstDayOfSelectedMonth, lastDateOfPrevMonth) =>
+  Array(firstDayOfSelectedMonth)
+    .fill()
+    .map((_, idx) => ({
+      year: selectedMonth === 0 ? selectedYear - 1 : selectedYear,
+      month: selectedMonth === 0 ? 11 : selectedMonth - 1,
+      date: lastDateOfPrevMonth - firstDayOfSelectedMonth + idx + 1,
+      isSelectedMonth: false
+    }));
 
-const createSelectedDatesHTML = (firstDay, lastDate) => {
-  const firstSunday = 8 - firstDay;
-  const dates = Array.from({ length: +lastDate }, (_, idx) => idx + 1);
-  return dates
-    .map(
-      date => `
-  <div class="date ${date % 7 === firstSunday % 7 ? 'sunday' : ''} ${
-        date === selectedDate ? 'picked' : ''
-      }" data-year="${selectedYear}" data-month="${selectedMonth}" data-date="${date}">${date}</div>
-  `
-    )
-    .join('');
-};
+const createDatesOfSelectedMonth = lastDateOfSelectedMonth =>
+  Array(lastDateOfSelectedMonth)
+    .fill()
+    .map((_, idx) => ({
+      year: selectedYear,
+      month: selectedMonth,
+      date: idx + 1,
+      isSelectedMonth: true
+    }));
 
-const createNextDatesHTML = lastDay => {
-  if (lastDay === 6) return '';
-  const dates = Array.from({ length: 6 - lastDay }, (_, idx) => idx + 1);
-  return dates
+const createDatesOfNextMonth = lastDayOfSelectedMonth =>
+  lastDayOfSelectedMonth === 6
+    ? []
+    : Array(6 - lastDayOfSelectedMonth)
+        .fill()
+        .map((_, idx) => ({
+          year: selectedMonth === 11 ? selectedYear + 1 : selectedYear,
+          month: selectedMonth === 11 ? 0 : selectedMonth + 1,
+          date: idx + 1,
+          isSelectedMonth: false
+        }));
+
+const createCal = (
+  firstDayOfSelectedMonth,
+  lastDateOfPrevMonth,
+  lastDateOfSelectedMonth,
+  lastDayOfSelectedMonth
+) =>
+  [
+    ...createDatesOfPrevMonth(firstDayOfSelectedMonth, lastDateOfPrevMonth),
+    ...createDatesOfSelectedMonth(lastDateOfSelectedMonth),
+    ...createDatesOfNextMonth(lastDayOfSelectedMonth)
+  ]
     .map(
-      date => `
-      <div class="date afterMonth" data-year="${
-        selectedMonth === 11 ? selectedYear + 1 : selectedYear
-      }" data-month="${
-        selectedMonth === 11 ? 0 : selectedMonth + 1
-      }" data-date="${date}">${date}</div>
-      `
+      ({ year, month, date, isSelectedMonth }, idx) => `
+    <div class="date ${!(idx % 7) && isSelectedMonth ? 'sunday' : ''} ${
+        isSelectedMonth ? '' : 'beforeMonth'
+      } ${
+        date === selectedDate && isSelectedMonth ? 'picked' : ''
+      }" data-year="${year}" data-month="${month}" data-date="${date}">${date}</div>
+    `
     )
     .join('');
-};
 
 const renderNav = () => {
   $month.innerHTML = getMonthName(selectedDateObj);
@@ -101,18 +103,26 @@ const renderNav = () => {
 };
 
 const renderDates = () => {
-  const lastDate = getLastDateOfMonth(selectedYear, selectedMonth);
+  const firstDayOfSelectedMonth = getFirstDayOfMonth(
+    selectedYear,
+    selectedMonth
+  );
   const lastDateOfPrevMonth = getLastDateOfMonth(
     selectedMonth === 0 ? selectedYear - 1 : selectedYear,
     selectedMonth === 0 ? 11 : selectedMonth - 1
   );
-  const firstDay = getFirstDayOfMonth(selectedYear, selectedMonth);
-  const lastDay = getLastDayOfMonth(selectedYear, selectedMonth);
+  const lastDateOfSelectedMonth = getLastDateOfMonth(
+    selectedYear,
+    selectedMonth
+  );
+  const lastDayOfSelectedMonth = getLastDayOfMonth(selectedYear, selectedMonth);
 
-  $calendarDates.innerHTML =
-    createPrevDatesHTML(firstDay, lastDateOfPrevMonth) +
-    createSelectedDatesHTML(firstDay, lastDate) +
-    createNextDatesHTML(lastDay);
+  $calendarDates.innerHTML = createCal(
+    firstDayOfSelectedMonth,
+    lastDateOfPrevMonth,
+    lastDateOfSelectedMonth,
+    lastDayOfSelectedMonth
+  );
 };
 
 const renderCal = () => {
@@ -128,15 +138,13 @@ $datePicker.onfocus = () => {
 };
 
 $prevBtn.onclick = () => {
-  getPrevMonth();
-  renderNav(selectedDateObj);
-  renderDates(selectedDateObj);
+  setPrevMonthYear();
+  renderCal();
 };
 
 $nextBtn.onclick = () => {
-  getNextMonth();
-  renderNav(selectedDateObj);
-  renderDates(selectedDateObj);
+  setNextMonthYear();
+  renderCal();
 };
 
 window.onclick = e => {

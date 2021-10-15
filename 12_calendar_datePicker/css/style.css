@@ -55,6 +55,7 @@ body {
   border: 0;
   background-color: transparent;
   color: inherit;
+  cursor: pointer;
 }
 
 .calendar-year-month-name {
@@ -86,6 +87,7 @@ body {
 
 .calendar-dates {
   padding: 2%;
+  cursor: pointer;
 }
 
 .calendar-days > div,
