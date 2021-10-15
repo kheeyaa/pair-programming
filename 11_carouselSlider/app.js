@@ -37,11 +37,12 @@ carousel(document.querySelector('.carousel'), [
   });
 });
 
-const jumpSlide = shiftedSlide => {
-  $carouselSlides.style.setProperty('--duration', 0);
-  $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
-  isAbleSliding = true;
-};
+const jumpSlide = shiftedSlide =>
+  setTimeout(() => {
+    $carouselSlides.style.setProperty('--duration', 0);
+    $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
+    isAbleSliding = true;
+  }, SLIDING_DURATION);
 
 // event bindings
 $carousel.onclick = e => {
@@ -56,9 +57,6 @@ $carousel.onclick = e => {
     : [+currentSlide - 1, $carouselSlides.children.length - 2];
 
   $carouselSlides.style.setProperty('--currentSlide', nextSlide);
-  if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1) {
-    setTimeout(() => {
-      jumpSlide(shiftedSlide);
-    }, SLIDING_DURATION);
-  }
+  if (nextSlide === 0 || nextSlide === $carouselSlides.children.length - 1)
+    jumpSlide(shiftedSlide);
 };
