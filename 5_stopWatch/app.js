@@ -1,14 +1,16 @@
+// DOM Nodes
 const $display = document.querySelector('.display');
 const $stopwatch = document.querySelector('.stopwatch');
 const $laps = document.querySelector('.laps');
+const $startStopControl = $stopwatch.children[1];
+const $resetLapsControl = $stopwatch.children[2];
 
-const $leftControl = $stopwatch.children[1];
-const $rightControl = $stopwatch.children[2];
-
+// states
 let isRunning = false;
 let interval = 0;
 let laps = [];
 
+// functions
 const formatTime = () => {
   const millisecond = interval % 100;
   const second = Math.floor(interval / 100) % 60;
@@ -44,9 +46,9 @@ const renderLapsTime = () => {
 };
 
 const startTimer = () => {
-  $rightControl.removeAttribute('disabled');
-  $leftControl.innerHTML = 'Stop';
-  $rightControl.innerHTML = 'Lap';
+  $resetLapsControl.removeAttribute('disabled');
+  $startStopControl.innerHTML = 'Stop';
+  $resetLapsControl.innerHTML = 'Lap';
 
   const runTimer = setInterval(() => {
     interval += 1;
@@ -58,19 +60,17 @@ const startTimer = () => {
 };
 
 const stopTimer = () => {
-  if (interval === 0) {
-    $rightControl.setAttribute('disabled', true);
-  }
-  $leftControl.innerHTML = 'Start';
-  $rightControl.innerHTML = 'Reset';
+  $startStopControl.innerHTML = 'Start';
+  $resetLapsControl.innerHTML = 'Reset';
 };
 
-$leftControl.onclick = () => {
+// event bindings
+$startStopControl.onclick = () => {
   isRunning ? stopTimer() : startTimer();
   isRunning = !isRunning;
 };
 
-$rightControl.onclick = () => {
+$resetLapsControl.onclick = () => {
   if (isRunning) {
     laps = [...laps, formatTime()];
     renderLapsTime();
@@ -79,6 +79,6 @@ $rightControl.onclick = () => {
     laps = [];
     renderTime();
     renderLapsTime();
-    $rightControl.setAttribute('disabled', true);
+    $resetLapsControl.setAttribute('disabled', '');
   }
 };
