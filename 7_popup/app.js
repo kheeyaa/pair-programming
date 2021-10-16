@@ -12,12 +12,11 @@ $togglePopup.onclick = () => {
   $modalInput.focus();
 };
 
-$modalCancel.onclick = () => {
-  $modalWrap.classList.add('hidden');
-};
-$modalClose.onclick = () => {
-  $modalWrap.classList.add('hidden');
-};
+[$modalCancel, $modalClose].forEach($modalBtn => {
+  $modalBtn.onclick = () => {
+    $modalWrap.classList.add('hidden');
+  };
+});
 
 $modalForm.onsubmit = e => {
   e.preventDefault();
