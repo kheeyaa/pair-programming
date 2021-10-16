@@ -13,7 +13,7 @@ const fetchState = () => {
     : false;
 };
 
-const toggleNavigatorState = () => {
+const toggleNavState = () => {
   fetchState();
   isActive = !isActive;
   localStorage.setItem('isActive', isActive);
@@ -21,9 +21,9 @@ const toggleNavigatorState = () => {
 };
 
 const toggleTransitionState = isDisable => {
-  $nav.classList.toggle('notransition', isDisable);
-  $main.classList.toggle('notransition', isDisable);
-  $toggle.classList.toggle('notransition', isDisable);
+  [$nav, $main, $toggle].forEach($element =>
+    $element.classList.toggle('notransition', isDisable)
+  );
 };
 
 // event bindings
@@ -35,5 +35,5 @@ window.addEventListener('DOMContentLoaded', () => {
 
 $toggle.onclick = () => {
   toggleTransitionState(false);
-  toggleNavigatorState();
+  toggleNavState();
 };
