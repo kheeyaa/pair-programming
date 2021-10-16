@@ -1,26 +1,23 @@
+// DOM Nodes
 const $accordion = document.querySelector('.accordion');
+const $menuContainers = document.querySelectorAll('.menu-container');
 
-const activeAccordionMenu = target => {
-  [...$accordion.children].forEach($menuContainer => {
-    $menuContainer === target
-      ? $menuContainer.classList.add('active')
-      : $menuContainer.classList.remove('active');
+// functions
+const activeAccordionMenu = selectedMenuContainer => {
+  $menuContainers.forEach($menuContainer => {
+    $menuContainer.classList.toggle(
+      'active',
+      $menuContainer === selectedMenuContainer
+    );
   });
 };
 
-const getHeight = target => {
-  const totalHeight = [...target.children].reduce(
-    (height, $subMenuItem) =>
-      height + getComputedStyle($subMenuItem).height.slice(0, -2) * 1,
-    0
-  );
-  return totalHeight + 'px';
-};
-
-const expandMenu = target => {
-  [...$accordion.children].forEach($menuContainer => {
-    $menuContainer.lastElementChild.style.height =
-      $menuContainer.classList.contains('active') ? getHeight(target) : 0;
+const expandMenu = () => {
+  $menuContainers.forEach($menuContainer => {
+    const $submenu = $menuContainer.querySelector('.submenu');
+    $submenu.style.height = $menuContainer.classList.contains('active')
+      ? $submenu.scrollHeight + 'px'
+      : 0;
   });
 };
 
@@ -28,9 +25,8 @@ const initializeMenuHeight = () => {
   const $active = document.querySelector('.active');
   $active.lastElementChild.style.height = 'auto';
 
-  $active.lastElementChild.style.height = getComputedStyle(
-    $active.lastElementChild
-  ).height;
+  $active.lastElementChild.style.height =
+    $active.lastElementChild.scrollHeight + 'px';
 };
 
 // event bindings
@@ -38,7 +34,7 @@ $accordion.onclick = e => {
   if (!e.target.classList.contains('menu')) return;
 
   activeAccordionMenu(e.target.parentNode);
-  expandMenu(e.target.nextElementSibling);
+  expandMenu();
 };
 
 window.addEventListener('DOMContentLoaded', initializeMenuHeight);
