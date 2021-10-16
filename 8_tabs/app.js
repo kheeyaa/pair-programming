@@ -16,6 +16,14 @@ const fetchTabsData = () => {
           {
             title: 'JavaScript',
             content: `JavaScript(JS) is a lightweight interpreted or JIT-compiled programming language with first-class functions. While it is most well-known as the scripting language for Web pages, many non-browser environments also use it, such as Node.js, Apache CouchDB and Adobe Acrobat. JavaScript is a prototype-based, multi-paradigm, dynamic language, supporting object-oriented, imperative, and declarative (e.g. functional programming) styles.`
+          },
+          {
+            title: 'JavaScript',
+            content: `JavaScript(JS) is a lightweight interpreted or JIT-compiled programming language with first-class functions. While it is most well-known as the scripting language for Web pages, many non-browser environments also use it, such as Node.js, Apache CouchDB and Adobe Acrobat. JavaScript is a prototype-based, multi-paradigm, dynamic language, supporting object-oriented, imperative, and declarative (e.g. functional programming) styles.`
+          },
+          {
+            title: 'JavaScript',
+            content: `JavaScript(JS) is a lightweight interpreted or JIT-compiled programming language with first-class functions. While it is most well-known as the scripting language for Web pages, many non-browser environments also use it, such as Node.js, Apache CouchDB and Adobe Acrobat. JavaScript is a prototype-based, multi-paradigm, dynamic language, supporting object-oriented, imperative, and declarative (e.g. functional programming) styles.`
           }
         ]),
       1000
@@ -23,57 +31,66 @@ const fetchTabsData = () => {
   });
 };
 
-// ----------------------------------------
-
+// DOM Nodes
 const $tabs = document.querySelector('.tabs');
 const $spinner = document.querySelector('.spinner');
 
+// states
 let tabData = [];
 
+// functions
 const render = () => {
-  let navHTML = '<nav>';
-  let contentHTML = '';
-  navHTML += tabData
-    .map(({ title }, i) => ` <div class="tab" data-index="${i}">${title}</div>`)
-    .join('');
-  navHTML += `   
-    <span class="glider"></span>
+  const navHTML =
+    '<nav>' +
+    tabData
+      .map(
+        ({ title }, i) => `<div class="tab" data-index="${i}">${title}</div>`
+      )
+      .join('') +
+    `<span class="glider"></span>
     </nav>`;
 
-  contentHTML = tabData
+  const contentHTML = tabData
     .map(
-      ({ content }, i) =>
-        `<div class="tab-content ${i === 0 ? 'active' : ''}">
-             ${content}
-         </div>
-    `
+      ({ content }, i) => `
+        <div class="tab-content ${i === 0 ? 'active' : ''}">
+          ${content}
+        </div>`
     )
     .join('');
   $tabs.innerHTML = navHTML + contentHTML;
 };
 
-const AddTabs = () => {
+const addTabs = () => {
+  $tabs.style.setProperty('--tab-width', 600 / tabData.length);
   $tabs.style.setProperty('--tabs-length', tabData.length);
   $spinner.style.display = 'none';
   render();
 };
 
-fetchTabsData().then(value => {
-  tabData = [...value];
-  AddTabs();
-});
-
 const activateTab = id => {
   [...$tabs.children].forEach((tab, i) =>
-    i === +id + 1 ? tab.classList.add('active') : tab.classList.remove('active')
+    tab.classList.toggle('active', i === +id + 1)
   );
+
   const $glider = document.querySelector('.glider');
   $glider.style.transform = `translateX(calc(var(--tab-width) * ${+id}px))`;
 };
 
+const hideShadow = () => {
+  $tabs.style.setProperty('--tab-width', 0);
+};
+
+fetchTabsData().then(value => {
+  tabData = [...value];
+  addTabs();
+});
+
+// event bindins
+window.addEventListener('DOMContentLoaded', hideShadow);
+
 $tabs.onclick = e => {
   if (!e.target.classList.contains('tab')) return;
 
-  const tabId = e.target.dataset.index;
-  activateTab(tabId);
+  activateTab(e.target.dataset.index);
 };
