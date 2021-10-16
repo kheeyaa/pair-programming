@@ -1,4 +1,6 @@
-# Pair Programming
+# 💡 Pair Programming
+
+- Check our project! 🖥 [click here](http://www.seohey.co.kr/hee&hey/)
 
 ## List of Program
 
