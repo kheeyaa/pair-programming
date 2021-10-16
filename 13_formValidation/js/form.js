@@ -2,6 +2,8 @@ import toaster from './toaster.js';
 
 // DOM Nodes
 const $signinForm = document.querySelector('.form.signin');
+const $signupForm = document.querySelector('.form.signup');
+const $links = document.querySelectorAll('.link > a');
 
 // states
 const INPUT_TYPE_INFO = {
@@ -36,8 +38,32 @@ const isValidate = (inputType, inputVal) => {
   return validation;
 };
 
+const initializeValidateStates = () => {
+  [...Object.keys(INPUT_TYPE_INFO)].forEach(inputType => {
+    INPUT_TYPE_INFO[inputType].validateState = false;
+  });
+};
+
+const isEqualPw = () => {
+  const $signupPassword = document.getElementById('signup-password');
+  const $signupConfirmPassword = document.getElementById(
+    'signup-confirm-password'
+  );
+  INPUT_TYPE_INFO['confirm-password'].validateState =
+    $signupPassword.value === $signupConfirmPassword.value;
+  return INPUT_TYPE_INFO['confirm-password'].validateState;
+};
+
+const printFormData = $form => {
+  $form.method = 'POST';
+  console.log($form.method);
+  [...new FormData($form).entries()].forEach(([key, value]) => {
+    console.log(`${key}: ${value}`);
+  });
+};
+
 // Event Bindings
-const $inputContainers = $signinForm.querySelectorAll('.input-container');
+const $inputContainers = document.querySelectorAll('.input-container');
 
 [...$inputContainers].forEach($container => {
   const $input = $container.querySelector('input');
@@ -47,7 +73,11 @@ const $inputContainers = $signinForm.querySelectorAll('.input-container');
   const $submitBtn = $container.parentNode.querySelector('.button');
 
   $input.oninput = () => {
-    const validation = isValidate($input.name, $input.value);
+    const validation =
+      $input.name === 'confirm-password'
+        ? isEqualPw()
+        : isValidate($input.name, $input.value);
+
     $iconSuccess.classList.toggle('hidden', !validation);
     $iconError.classList.toggle('hidden', validation);
     $error.innerHTML = validation ? '' : INPUT_TYPE_INFO[$input.name].message;
@@ -61,9 +91,20 @@ const $inputContainers = $signinForm.querySelectorAll('.input-container');
   };
 });
 
-[$signinForm].forEach($form => {
+[$signinForm, $signupForm].forEach($form => {
   $form.onsubmit = e => {
     e.preventDefault();
     toaster(e);
+    printFormData($form);
+  };
+});
+
+$links.forEach($el => {
+  $el.onclick = () => {
+    [$signinForm, $signupForm].forEach($form => {
+      $form.classList.toggle('hidden');
+    });
+
+    initializeValidateStates();
   };
 });
