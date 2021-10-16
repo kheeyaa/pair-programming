@@ -7,14 +7,27 @@ const $resetLapsControl = $stopwatch.children[2];
 
 // states
 let isRunning = false;
-let interval = 0;
 let laps = [];
+const intervalTime = (() => {
+  let interval = 0;
+  return {
+    increase() {
+      interval += 1;
+    },
+    reset() {
+      interval = 0;
+    },
+    get value() {
+      return interval;
+    }
+  };
+})();
 
 // functions
 const formatTime = () => {
-  const millisecond = interval % 100;
-  const second = Math.floor(interval / 100) % 60;
-  const minute = Math.floor(interval / 6000);
+  const millisecond = intervalTime.value % 100;
+  const second = Math.floor(intervalTime.value / 100) % 60;
+  const minute = Math.floor(intervalTime.value / 6000);
 
   return `${minute > 9 ? minute : '0' + minute}:${
     second > 9 ? second : '0' + second
@@ -25,15 +38,18 @@ const renderTime = () => {
   $display.innerHTML = formatTime();
 };
 
+const toggleVisibilityLapTitle = () => {
+  const $lapTitles = document.querySelectorAll('.lap-title');
+  [...$lapTitles].forEach($lapTitle => {
+    $lapTitle.style.display = laps.length ? 'block' : 'none';
+  });
+};
+
 const renderLapsTime = () => {
   const $fragment = document.createDocumentFragment();
   const $lapsId = document.createElement('div');
   const $lapsTime = document.createElement('div');
-  if (laps.length === 1) {
-    $laps.innerHTML = `
-      <div class="lap-title">Laps</div>
-      <div class="lap-title">Time</div>`;
-  }
+
   if (laps.length > 0) {
     $lapsId.innerHTML = laps.length;
     $lapsTime.innerHTML = laps[laps.length - 1];
@@ -41,32 +57,31 @@ const renderLapsTime = () => {
     $fragment.appendChild($lapsTime);
     $laps.appendChild($fragment);
   } else {
-    $laps.innerHTML = '';
+    $laps.innerHTML = `
+      <div class="lap-title">Laps</div>
+      <div class="lap-title">Time</div>`;
   }
+  toggleVisibilityLapTitle();
 };
 
 const startTimer = () => {
   $resetLapsControl.removeAttribute('disabled');
-  $startStopControl.innerHTML = 'Stop';
-  $resetLapsControl.innerHTML = 'Lap';
 
   const runTimer = setInterval(() => {
-    interval += 1;
-    if (!isRunning) {
-      clearInterval(runTimer);
-    }
+    isRunning ? intervalTime.increase() : clearInterval(runTimer);
     renderTime();
   }, 10);
 };
 
-const stopTimer = () => {
-  $startStopControl.innerHTML = 'Start';
-  $resetLapsControl.innerHTML = 'Reset';
+const toggleBtnName = isRunning => {
+  $startStopControl.innerHTML = isRunning ? 'Start' : 'Stop';
+  $resetLapsControl.innerHTML = isRunning ? 'Reset' : 'Lap';
 };
 
 // event bindings
 $startStopControl.onclick = () => {
-  isRunning ? stopTimer() : startTimer();
+  toggleBtnName(isRunning);
+  if (!isRunning) startTimer();
   isRunning = !isRunning;
 };
 
@@ -75,10 +90,12 @@ $resetLapsControl.onclick = () => {
     laps = [...laps, formatTime()];
     renderLapsTime();
   } else {
-    interval = 0;
+    intervalTime.reset();
     laps = [];
     renderTime();
     renderLapsTime();
     $resetLapsControl.setAttribute('disabled', '');
   }
 };
+
+window.addEventListener('DOMContentLoaded', toggleVisibilityLapTitle);
