@@ -1,4 +1,12 @@
 // states
+const validateState = {
+  userid: false,
+  username: false,
+  password: false,
+  'confirm-password': false
+};
+
+// constant
 const INPUT_TYPE_INFO = {
   userid: {
     message: '이메일 형식에 맞게 입력해 주세요.',
@@ -16,13 +24,6 @@ const INPUT_TYPE_INFO = {
   'confirm-password': {
     message: '패스워드가 일치하지 않습니다.'
   }
-};
-
-const validateState = {
-  userid: false,
-  username: false,
-  password: false,
-  'confirm-password': false
 };
 
 // DOM Nodes
