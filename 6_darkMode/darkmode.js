@@ -1,7 +1,10 @@
+// DOM Nodes
 const $body = document.querySelector('body');
 
+// state
 let isDarkMode = false;
 
+// functions
 const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 const fetchState = () => {
@@ -10,5 +13,9 @@ const fetchState = () => {
     : darkModeMediaQuery.matches;
 };
 
-fetchState();
-$body.classList.toggle('dark', isDarkMode);
+const initializeDarkMode = () => {
+  fetchState();
+  $body.classList.toggle('dark', isDarkMode);
+};
+
+initializeDarkMode();
