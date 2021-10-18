@@ -75,12 +75,12 @@ const createDatesOfNextMonth = lastDayOfSelectedMonth =>
           isSelectedMonth: false
         }));
 
-const createCal = (
+const createCal = ({
   firstDayOfSelectedMonth,
   lastDateOfPrevMonth,
   lastDateOfSelectedMonth,
   lastDayOfSelectedMonth
-) =>
+}) =>
   [
     ...createDatesOfPrevMonth(firstDayOfSelectedMonth, lastDateOfPrevMonth),
     ...createDatesOfSelectedMonth(lastDateOfSelectedMonth),
@@ -89,7 +89,7 @@ const createCal = (
     .map(
       ({ year, month, date, isSelectedMonth }, idx) => `
     <div class="date ${!(idx % 7) && isSelectedMonth ? 'sunday' : ''} ${
-        isSelectedMonth ? '' : 'beforeMonth'
+        isSelectedMonth ? '' : 'prevNextMonth'
       } ${
         date === selectedDate && isSelectedMonth ? 'picked' : ''
       }" data-year="${year}" data-month="${month}" data-date="${date}">${date}</div>
@@ -103,26 +103,17 @@ const renderNav = () => {
 };
 
 const renderDates = () => {
-  const firstDayOfSelectedMonth = getFirstDayOfMonth(
-    selectedYear,
-    selectedMonth
-  );
-  const lastDateOfPrevMonth = getLastDateOfMonth(
-    selectedMonth === 0 ? selectedYear - 1 : selectedYear,
-    selectedMonth === 0 ? 11 : selectedMonth - 1
-  );
-  const lastDateOfSelectedMonth = getLastDateOfMonth(
-    selectedYear,
-    selectedMonth
-  );
-  const lastDayOfSelectedMonth = getLastDayOfMonth(selectedYear, selectedMonth);
+  const createCalInfo = {
+    firstDayOfSelectedMonth: getFirstDayOfMonth(selectedYear, selectedMonth),
+    lastDateOfPrevMonth: getLastDateOfMonth(
+      selectedMonth === 0 ? selectedYear - 1 : selectedYear,
+      selectedMonth === 0 ? 11 : selectedMonth - 1
+    ),
+    lastDateOfSelectedMonth: getLastDateOfMonth(selectedYear, selectedMonth),
+    lastDayOfSelectedMonth: getLastDayOfMonth(selectedYear, selectedMonth)
+  };
 
-  $calendarDates.innerHTML = createCal(
-    firstDayOfSelectedMonth,
-    lastDateOfPrevMonth,
-    lastDateOfSelectedMonth,
-    lastDayOfSelectedMonth
-  );
+  $calendarDates.innerHTML = createCal(createCalInfo);
 };
 
 const renderCal = () => {
