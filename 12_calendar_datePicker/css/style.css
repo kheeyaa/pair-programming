@@ -99,8 +99,7 @@ body {
   height: calc(var(--calendar-size) / 7);
 }
 
-.beforeMonth,
-.afterMonth {
+.prevNextMonth {
   color: #ccc;
 }
 
