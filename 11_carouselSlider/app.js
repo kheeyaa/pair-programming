@@ -9,6 +9,13 @@ const $carouselSlides = document.createElement('div');
 const $carousel = document.querySelector('.carousel');
 
 // functions
+const jumpSlide = shiftedSlide =>
+  setTimeout(() => {
+    $carouselSlides.style.setProperty('--duration', 0);
+    $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
+    isAbleSliding = true;
+  }, SLIDING_DURATION);
+
 const carousel = ($container, images) => {
   $carouselSlides.classList.add('carousel-slides');
   $carouselSlides.innerHTML =
@@ -31,20 +38,13 @@ carousel(document.querySelector('.carousel'), [
   'movies/movie-4.jpg'
 ]);
 
+// event bindings
 ['transitionstart', 'transitionend'].forEach(transitionEvent => {
   $carouselSlides.addEventListener(transitionEvent, () => {
     isAbleSliding = transitionEvent === 'transitionend';
   });
 });
 
-const jumpSlide = shiftedSlide =>
-  setTimeout(() => {
-    $carouselSlides.style.setProperty('--duration', 0);
-    $carouselSlides.style.setProperty('--currentSlide', shiftedSlide);
-    isAbleSliding = true;
-  }, SLIDING_DURATION);
-
-// event bindings
 $carousel.onclick = e => {
   if (!(isAbleSliding && e.target.classList.contains('carousel-control')))
     return;
